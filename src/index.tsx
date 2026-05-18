@@ -36,6 +36,63 @@ const KmeshNodeInfo = makeCustomResourceClass({
 });
 
 /**
+ * ClusterSummary Component
+ *
+ * Shows high-level metrics for Kmesh resources in the cluster.
+ */
+function ClusterSummary() {
+  const [nodeInfoList] = KmeshNodeInfo.useList();
+  const [gateways] = Gateway.useList();
+
+  const waypoints = React.useMemo(() => {
+    return (
+      gateways?.filter(
+        (gw) => gw.spec?.gatewayClassName === "istio-waypoint"
+      ) ?? []
+    );
+  }, [gateways]);
+
+  return (
+    <div style={{ display: "flex", gap: "20px", marginBottom: "30px" }}>
+      <div
+        style={{
+          flex: 1,
+          padding: "20px",
+          border: "1px solid #ddd",
+          borderRadius: "8px",
+        }}
+      >
+        <h3 style={{ margin: "0 0 10px 0", fontSize: "16px" }}>
+          KmeshNodeInfo
+        </h3>
+        <div style={{ fontSize: "32px", fontWeight: "bold" }}>
+          {nodeInfoList?.length || 0}
+        </div>
+        <p style={{ margin: "5px 0 0 0", color: "#666", fontSize: "14px" }}>
+          Total Resources
+        </p>
+      </div>
+      <div
+        style={{
+          flex: 1,
+          padding: "20px",
+          border: "1px solid #ddd",
+          borderRadius: "8px",
+        }}
+      >
+        <h3 style={{ margin: "0 0 10px 0", fontSize: "16px" }}>Waypoints</h3>
+        <div style={{ fontSize: "32px", fontWeight: "bold" }}>
+          {waypoints.length}
+        </div>
+        <p style={{ margin: "5px 0 0 0", color: "#666", fontSize: "14px" }}>
+          Active Gateways
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/**
  * KmeshNodeInfoList Component
  *
  * Displays a list of KmeshNodeInfo custom resources in a table format.
@@ -80,7 +137,9 @@ function KmeshNodeInfoList() {
   // Table view
   return (
     <div style={{ padding: "20px" }}>
-      <h1>Kmesh Node Info</h1>
+      <h1>Kmesh Overview</h1>
+      <ClusterSummary />
+      <h2>Kmesh Node Info</h2>
       <table
         style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}
       >
